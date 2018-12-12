@@ -16,11 +16,13 @@ public class FoodFactory {
     }
     public MainFood giveFood() {
         float[] xy = getXY();
-        int f=(int)(Math.random()*2);
+        int f=(int)(Math.random()*3);
         if (f==0){
-            return new BeerFood(xy[0], xy[1], mainStage);
-        }else {
+            return new PillFood(xy[0],xy[1],mainStage);
+        }else if (f==1){
             return new TimeFood(xy[0],xy[1],mainStage);
+        }else {
+            return new BeerFood(xy[0], xy[1], mainStage);
         }
     }
     public MainFood giveBasicFood() {

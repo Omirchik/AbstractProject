@@ -9,49 +9,11 @@ import mygames.game.Snake.GameBeta;
 
 
 public class TimeFood extends MainFood {
-    private int count=10;
-    private float timer=0f;
-    private Label label;
-
     public TimeFood(float x, float y, Stage s) {
         super(x, y, s);
         setTexture(new Texture(Gdx.files.internal("snake/pineapple.png")));
-        label=new Label("Score:", GameBeta.labelStyle);
-        label.setColor(Color.CYAN);
-        label.setPosition(this.getX()-10,this.getY()+10);
-        s.addActor(label);
     }
     public void act(float dt){
-        timer+=dt;
-        if (timer<1){
-            setScale(1);
-        }else if (timer >= 1 && timer < 2){
-            setScale(1.1f);
-            count=10;
-        }else if (timer >= 2 && timer < 3){
-            setScale(1);
-            count=8;
-        }else if (timer >= 3 && timer < 4) {
-            setScale(1.1f);
-            count=6;
-        }else if (timer >= 4 && timer < 5){
-            setScale(1);
-            count=4;
-        }else {
-            setScale(1.1f);
-            count=2;
-        }
-        if (timer>6f){
-            this.remove();
-            label.remove();
-        }
-        label.setText(""+count);
-    }
-    public int getCount() {
-        return count;
-    }
-
-    public Label getLabel() {
-        return label;
+        super.act(dt);
     }
 }

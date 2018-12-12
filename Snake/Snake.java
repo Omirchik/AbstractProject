@@ -3,10 +3,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import mygames.game.Snake.CollisionStates.CollisionState;
+import mygames.game.Snake.CollisionStates.NoCollision;
+import mygames.game.Snake.CollisionStates.NormalCollision;
 import mygames.game.Snake.StatesOfSnake.HardState;
 import mygames.game.Snake.StatesOfSnake.NormalState;
 import mygames.game.Snake.StatesOfSnake.State;
-
 import java.util.ArrayList;
 public class Snake {
     private ArrayList<BodyPart> body;
@@ -17,31 +19,39 @@ public class Snake {
     private State state;
     private HardState hardState;
     private NormalState normalState;
+    private float moveRate=16f;
 
-    
+    private CollisionState collisionStatestate;
+    private NormalCollision normalCollision;
+    private NoCollision noCollision;
 
-    private float moveRate=15.1f;
-
-    public Snake(float x,float y,Stage stage){
+    private ArrayList<Obstacle> obstacles;
+    public Snake(float x,float y,Stage stage,ArrayList<Obstacle> obstacles){
         mainStage=stage;
         head=new Head(x,y,mainStage);
-        head.setTexture(new Texture(Gdx.files.internal("snake/snake.png")));
         body=new ArrayList<BodyPart>();
         movement="up";
 
         hardState=new HardState(this);
         normalState=new NormalState(this);
+
         state=normalState;
+
+        this.obstacles=obstacles;
+
+        this.normalCollision=new NormalCollision(this);
+        this.noCollision=new NoCollision(this);
+        collisionStatestate=normalCollision;
     }
     public void act(){
         if (head.getX()<0){
-            head.setPosition(640,head.getY());
-        }else if (head.getX()>640){
+            head.setPosition(630,head.getY());
+        }else if (head.getX()>630){
             head.setPosition(0,head.getY());
-        }else if (head.getY()>480){
+        }else if (head.getY()>470){
             head.setPosition(head.getX(),0);
         }else if (head.getY()<0){
-            head.setPosition(head.getX(),480);
+            head.setPosition(head.getX(),470);
         }
         state.moving();
         move(head.getX(),head.getY());
@@ -54,10 +64,13 @@ public class Snake {
         }if (movement.equals("down")){
             head.moveBy(0,-moveRate);
         }
-    }
+            collisionStatestate.collision();
+        }
     public void addBodyPart(){
         BodyPart bodyPart=new BodyPart(head.getX(),head.getY(),mainStage);
-        bodyPart.setTexture(new Texture(Gdx.files.internal("snake/snake.png")));
+        if (collisionStatestate instanceof NoCollision){
+            bodyPart.getColor().a=0.5f;
+        }
         body.add(bodyPart);
     }
     public void move(float x,float y){
@@ -75,20 +88,11 @@ public class Snake {
     public ArrayList<BodyPart> getBody(){
         return body;
     }
-    public void setHead(Head head) {
-        this.head = head;
-    }
     public String getMovement() {
         return movement;
     }
     public void setMovement(String movement) {
         this.movement = movement;
-    }
-    public float getMoveRate() {
-        return moveRate;
-    }
-    public void setMoveRate(float moveRate) {
-        this.moveRate = moveRate;
     }
     public State getState() {
         return state;
@@ -101,5 +105,15 @@ public class Snake {
     }
     public NormalState getNormalState() {
         return normalState;
+    }
+    public ArrayList<Obstacle> getObstacles() { return obstacles;}
+    public CollisionState getCollisionStatestate() { return collisionStatestate; }
+    public void setCollisionStatestate(CollisionState collisionStatestate) { this.collisionStatestate = collisionStatestate;}
+
+    public NormalCollision getNormalCollision() {
+        return normalCollision;
+    }
+    public NoCollision getNoCollision() {
+        return noCollision;
     }
 }
