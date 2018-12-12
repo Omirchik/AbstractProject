@@ -7,6 +7,7 @@ public class Head extends BaseActor {
 
     public Head(float x, float y, Stage s) {
         super(x, y, s);
+        this.addActor();
     }
 
 }

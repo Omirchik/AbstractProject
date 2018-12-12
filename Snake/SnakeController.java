@@ -7,77 +7,96 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import mygames.game.Snake.Foods.BeerFood;
 import mygames.game.Snake.Foods.FoodFactory;
 import mygames.game.Snake.Foods.MainFood;
+import mygames.game.Snake.Foods.TimeFood;
+import mygames.game.Snake.StatesOfSnake.HardState;
+
 import java.util.ArrayList;
 public class SnakeController extends GameBeta {
     private Snake snake;
     private BaseActor food;
     private BaseActor field;
     private BaseActor gameOver;
-    private static final float MOVE_TIME=0.08f;
+
+    private static final float MOVE_TIME=0.06f;
     private float timer=0.0f;
 
     private Label label;
+    private Label labelTimerForState;
+
+    private float timerForBeer=0f;
+
     private int count=0;
     private GamePlay GMstate;
 
     private MainFood mainFood;
     private FoodFactory foodFactory;
 
+    private float timerForFood=0f;
+
     private ArrayList<Obstacle> obstacles;
     @Override
     public void initialize() {
         obstacles=new ArrayList<Obstacle>();
-        foodFactory=new FoodFactory(obstacles);
+        foodFactory=new FoodFactory(obstacles,mainStage);
 
         GMstate=GamePlay.RUN;
         field = new BaseActor(0,0,mainStage);
         field.setTexture(new Texture(Gdx.files.internal("snake/field.jpg")));
         field.setSize(640,480);
-
+        field.addActor();
         snake=new Snake(100,100,mainStage);
+        snake.getHead().addActor();
 
-
-        mainFood = foodFactory.giveFood(mainStage);
-        food=foodFactory.giveBasicFood(mainStage);
+        food=foodFactory.giveBasicFood();
+        food.addActor();
 
         label=new Label("Score:",GameBeta.labelStyle);
         label.setColor(Color.CYAN);
         label.setPosition(20,450);
+
+
+        labelTimerForState = new Label("Time:",GameBeta.labelStyle);
+        labelTimerForState.setColor(Color.ROYAL);
+        labelTimerForState.setPosition(580,450);
+
         mainStage.addActor(label);
 
-        obstacles.add(new Obstacle(100,80,mainStage));
-        obstacles.add(new Obstacle(128,80,mainStage));
-        obstacles.add(new Obstacle(156,80,mainStage));
+        //left side bottom
+        obstacles.add(new Obstacle(148,80,mainStage));
+        obstacles.add(new Obstacle(100,120,mainStage));
 
-        obstacles.add(new Obstacle(100,108,mainStage));
-        obstacles.add(new Obstacle(100,136,mainStage));
-
+        //left up side
         obstacles.add(new Obstacle(100,380,mainStage));
-        obstacles.add(new Obstacle(128,380,mainStage));
-        obstacles.add(new Obstacle(156,380,mainStage));
-
         obstacles.add(new Obstacle(100,352,mainStage));
-        obstacles.add(new Obstacle(100,324,mainStage));
 
-        obstacles.add(new Obstacle(480,380,mainStage));
-        obstacles.add(new Obstacle(508,380,mainStage));
-        obstacles.add(new Obstacle(536,380,mainStage));
+        //right side
+        obstacles.add(new Obstacle(450,380,mainStage));
+        obstacles.add(new Obstacle(506,352,mainStage));
 
-        obstacles.add(new Obstacle(536,352,mainStage));
-        obstacles.add(new Obstacle(536,324,mainStage));
-
-        obstacles.add(new Obstacle(480,80,mainStage));
-        obstacles.add(new Obstacle(508,80,mainStage));
-        obstacles.add(new Obstacle(536,80,mainStage));
-
-        obstacles.add(new Obstacle(536,108,mainStage));
-        obstacles.add(new Obstacle(536,136,mainStage));
-
+        //right side down
+        obstacles.add(new Obstacle(450,80,mainStage));
+        obstacles.add(new Obstacle(506,120,mainStage));
     }
     @Override
     public void update(float dt) {
         switch (GMstate){
             case RUN:
+                if (snake.getState() instanceof HardState){
+                    int temp=(int)(timerForBeer);
+                    labelTimerForState.setText("Time: "+temp);
+                    timerForBeer-=dt;
+
+                    if (timerForBeer<0){
+                        snake.setState(snake.getNormalState());
+                        labelTimerForState.remove();
+                    }
+                }
+                timerForFood+=dt;
+                if (timerForFood>=6f){
+                    mainFood = foodFactory.giveFood();
+                    mainFood.addActor();
+                    timerForFood=0f;
+                }
                 timer+=dt;
                 if (timer>=MOVE_TIME){
                     timer=0;
@@ -93,14 +112,25 @@ public class SnakeController extends GameBeta {
                     count++;
                     label.setText("Score: "+count);
                     snake.addBodyPart();
-                    food.setPosition(GameConfig.getX(),GameConfig.getY());
+                    float[] xy=foodFactory.getXY();
+                    food.setPosition(xy[0],xy[1]);
                 }if (mainStage.getActors().contains(mainFood,true) && snake.getHead().overLaps(mainFood)){
-                    snake.setState(snake.getHardState());
+                    if (mainFood instanceof BeerFood){
+                        snake.setState(snake.getHardState());
+                        timerForBeer+=10f;
+                        mainStage.addActor(labelTimerForState);
+                    }else if (mainFood instanceof TimeFood){
+                        count+=((TimeFood) mainFood).getCount();
+                        ((TimeFood) mainFood).getLabel().remove();
+                        label.setText("Score: "+count);
+                    }
+                    mainFood.remove();
                 }
                 break;
             case STOPPED:
                 gameOver=new BaseActor(120,100,mainStage);
                 gameOver.setTexture(new Texture(Gdx.files.internal("snake/over.png")));
+                gameOver.addActor();
                 gameOver.setVisible(true);break;
         }
     }

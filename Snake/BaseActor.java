@@ -13,14 +13,19 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 public class BaseActor extends Actor {
     private TextureRegion tr;
     private Rectangle rect;
-    
+    private Stage mainStage;
     public BaseActor(float x, float y, Stage s){
         super();
         setPosition(x,y);
-        s.addActor(this);
         tr=new TextureRegion();
         rect=new Rectangle();
+        mainStage=s;
     }
+
+    public void addActor() {
+        this.mainStage.addActor(this);
+    }
+
     public void setTexture(Texture t){
         tr.setRegion(t);
         setSize(t.getWidth(),t.getHeight());

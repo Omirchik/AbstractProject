@@ -8,9 +8,6 @@ import mygames.game.Snake.StatesOfSnake.NormalState;
 import mygames.game.Snake.StatesOfSnake.State;
 
 import java.util.ArrayList;
-
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveBy;
-
 public class Snake {
     private ArrayList<BodyPart> body;
     public Head head;
@@ -20,6 +17,8 @@ public class Snake {
     private State state;
     private HardState hardState;
     private NormalState normalState;
+
+    
 
     private float moveRate=15.1f;
 

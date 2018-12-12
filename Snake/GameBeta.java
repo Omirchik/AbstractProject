@@ -13,12 +13,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 public abstract class GameBeta extends Game {
 
     Stage mainStage;
+
     public static Label.LabelStyle labelStyle;
+
     @Override
     public void create() {
         mainStage=new Stage();
+
         labelStyle=new Label.LabelStyle();
         labelStyle.font=new BitmapFont();
+
         initialize();
     }
     public abstract void initialize();
@@ -26,7 +30,6 @@ public abstract class GameBeta extends Game {
         float dt= Gdx.graphics.getDeltaTime();
         mainStage.act(dt);
         update(dt);
-
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         mainStage.draw();

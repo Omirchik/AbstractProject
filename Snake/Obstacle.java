@@ -10,6 +10,6 @@ public class Obstacle extends BaseActor {
         super(x, y, s);
         setTexture(new Texture(Gdx.files.internal("chapter3/rock.png")));
         setSize(28f,28f);
-        setRect(28f,28f);
+        this.addActor();
     }
 }
